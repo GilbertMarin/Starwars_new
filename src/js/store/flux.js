@@ -16,7 +16,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 			home: [],
 			details: [],
 			baseURL: "https://www.swapi.tech/api/",
-			favorites: []
+			newURL: "https://3000-crimson-swan-6r92kr9q.ws-us03.gitpod.io",
+			favorites: [],
+			login: false
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -118,6 +120,48 @@ const getState = ({ getStore, getActions, setStore }) => {
 				const store = getStore();
 				store.favorites.splice(index, 1);
 				setStore({ favorites: store.favorites });
+			},
+
+			loginValidation: (username, password) => {
+				console.log(username, password);
+				const store = getStore();
+				console.log(store.newURL);
+				fetch(`${store.newURL}/login`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						username: username,
+						password: password
+					})
+				})
+					.then(resp => {
+						//console.log("respuesta", resp.json());
+						return resp.json();
+					})
+					.then(data => {
+						//setStore({ token: data.results || data.result });
+						console.log("dataresult", data);
+						localStorage.setItem("token", data.access_token);
+					})
+
+					.catch(err => {
+						console.log("error", err);
+					});
+			},
+			getToken: () => {
+				let store = getStore();
+				let token = localStorage.getItem("token");
+				console.log(token);
+				if (token && token.length > 0) {
+					console.log("entre");
+					setStore({ login: true });
+				} else {
+					console.log("entre al else");
+					setStore({ login: false });
+				}
+				console.log(store.login);
 			}
 		}
 	};

@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import ScrollToTop from "./component/scrollToTop";
 
+import { Login } from "./views/login.js";
 import { Home } from "./views/home";
 import { Generic } from "./views/generic";
 import { Details } from "./views/details.js";
@@ -23,6 +24,9 @@ const Layout = () => {
 					<Navbar />
 					<Switch>
 						<Route exact path="/">
+							<Login />
+						</Route>
+						<Route exact path="/home">
 							<Home />
 						</Route>
 						<Route exact path="/generic/:value">
