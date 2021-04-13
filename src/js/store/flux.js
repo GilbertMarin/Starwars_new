@@ -16,7 +16,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			home: [],
 			details: [],
 			baseURL: "https://www.swapi.tech/api/",
-			newURL: "https://3000-crimson-swan-6r92kr9q.ws-us03.gitpod.io",
+			newURL: "https://3000-red-tern-dqzbcae7.ws-us03.gitpod.io",
 			favorites: [],
 			login: false
 		},
@@ -113,15 +113,72 @@ const getState = ({ getStore, getActions, setStore }) => {
 				store.favorites.includes(name)
 					? setStore({ favorites: store.favorites })
 					: setStore({ favorites: store.favorites.concat(name) });
-				console.log(store.favorites);
+				console.log("Entre a agregar a Favoritos");
 			},
 
 			deleteFavorites: index => {
 				const store = getStore();
+				let token = localStorage.getItem("token");
 				store.favorites.splice(index, 1);
 				setStore({ favorites: store.favorites });
+				fetch(`${store.newURL}/favorites/`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer	${token}`
+					},
+					body: {
+						name: JSON.stringify(store.favorites[0])
+					}
+				}).then(resp => {
+					//console.log("respuesta", resp.json());
+					return resp.json();
+				});
 			},
 
+			getToken: () => {
+				let store = getStore();
+				let token = localStorage.getItem("token");
+				console.log(token);
+				if (token && token.length > 0) {
+					console.log("entre");
+					setStore({ login: true });
+				} else {
+					console.log("entre al else");
+					setStore({ login: false });
+				}
+				console.log(store.login);
+			},
+			deleteToken: () => {
+				let store = getStore();
+				setStore({ login: false });
+				localStorage.removeItem("token");
+				window.location.reload();
+			},
+			getFavorites: () => {
+				console.log("entre a los favorites");
+				const store = getStore();
+				let token = localStorage.getItem("token");
+				fetch(`${store.newURL}/favorites/`, {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer	${token}`
+					}
+				})
+					.then(resp => {
+						//console.log("respuesta", resp.json());
+						return resp.json();
+					})
+					.then(data => {
+						setStore({ favorites: data });
+						console.log("dataresult", store);
+					})
+
+					.catch(err => {
+						console.log("error", err);
+					});
+			},
 			loginValidation: (username, password) => {
 				console.log(username, password);
 				const store = getStore();
@@ -144,24 +201,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 						//setStore({ token: data.results || data.result });
 						console.log("dataresult", data);
 						localStorage.setItem("token", data.access_token);
+						window.location.reload();
 					})
 
 					.catch(err => {
 						console.log("error", err);
 					});
-			},
-			getToken: () => {
-				let store = getStore();
-				let token = localStorage.getItem("token");
-				console.log(token);
-				if (token && token.length > 0) {
-					console.log("entre");
-					setStore({ login: true });
-				} else {
-					console.log("entre al else");
-					setStore({ login: false });
-				}
-				console.log(store.login);
 			}
 		}
 	};

@@ -12,6 +12,7 @@ export const Login = () => {
 		actions.getToken();
 		if (store.login) {
 			history.push("/home");
+			actions.getFavorites();
 		}
 	}, []);
 	return (
