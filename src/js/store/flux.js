@@ -16,9 +16,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 			home: [],
 			details: [],
 			baseURL: "https://www.swapi.tech/api/",
-			newURL: "https://3000-red-tern-dqzbcae7.ws-us03.gitpod.io",
+			newURL: "https://3000-coffee-goldfish-08d7etqj.ws-us03.gitpod.io",
 			favorites: [],
-			login: false
+			login: false,
+			username: ""
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -109,18 +110,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			addFavorite: name => {
 				const store = getStore();
-
 				store.favorites.includes(name)
 					? setStore({ favorites: store.favorites })
 					: setStore({ favorites: store.favorites.concat(name) });
 				console.log("Entre a agregar a Favoritos");
-			},
 
-			deleteFavorites: index => {
-				const store = getStore();
 				let token = localStorage.getItem("token");
-				store.favorites.splice(index, 1);
-				setStore({ favorites: store.favorites });
 				fetch(`${store.newURL}/favorites/`, {
 					method: "POST",
 					headers: {
@@ -128,7 +123,26 @@ const getState = ({ getStore, getActions, setStore }) => {
 						Authorization: `Bearer	${token}`
 					},
 					body: {
-						name: JSON.stringify(store.favorites[0])
+						username: store.username,
+						value: name
+					}
+				}).then(resp => {
+					//console.log("respuesta", resp.json());
+					return resp.json();
+				});
+			},
+
+			deleteFavorites: index => {
+				const store = getStore();
+				const deleteId = store.favorites[index].id;
+				let token = localStorage.getItem("token");
+				store.favorites.splice(index, 1);
+				setStore({ favorites: store.favorites });
+				fetch(`${store.newURL}/favorites/${deleteId}`, {
+					method: "DELETE",
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer	${token}`
 					}
 				}).then(resp => {
 					//console.log("respuesta", resp.json());
@@ -201,6 +215,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 						//setStore({ token: data.results || data.result });
 						console.log("dataresult", data);
 						localStorage.setItem("token", data.access_token);
+						setStore({ username: username });
 						window.location.reload();
 					})
 
