@@ -1,3 +1,5 @@
+import { Redirect } from "react-router-dom";
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
@@ -16,10 +18,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 			home: [],
 			details: [],
 			baseURL: "https://www.swapi.tech/api/",
-			newURL: "https://3000-coffee-goldfish-08d7etqj.ws-us03.gitpod.io",
+			newURL: "https://3000-crimson-llama-vl3x7loq.ws-us03.gitpod.io",
 			favorites: [],
 			login: false,
-			username: ""
+			username: "",
+			register: false
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -66,7 +69,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			getAllData: value => {
 				const store = getStore();
-				fetch(`${store.baseURL}${value}`, {
+				fetch(`${store.newURL}/${value}`, {
 					method: "GET",
 
 					headers: {
@@ -78,8 +81,9 @@ const getState = ({ getStore, getActions, setStore }) => {
 						return resp.json();
 					})
 					.then(data => {
-						setStore({ [value]: data.results || data.result });
+						setStore({ [value]: data });
 						//console.log(store.home);
+						//console.log(data);
 					})
 
 					.catch(err => {
@@ -113,7 +117,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				store.favorites.includes(name)
 					? setStore({ favorites: store.favorites })
 					: setStore({ favorites: store.favorites.concat(name) });
-				console.log("Entre a agregar a Favoritos");
+				console.log("Entre a agregar a Favoritos", store);
 
 				let token = localStorage.getItem("token");
 				fetch(`${store.newURL}/favorites/`, {
@@ -153,15 +157,12 @@ const getState = ({ getStore, getActions, setStore }) => {
 			getToken: () => {
 				let store = getStore();
 				let token = localStorage.getItem("token");
-				console.log(token);
+
 				if (token && token.length > 0) {
-					console.log("entre");
 					setStore({ login: true });
 				} else {
-					console.log("entre al else");
 					setStore({ login: false });
 				}
-				console.log(store.login);
 			},
 			deleteToken: () => {
 				let store = getStore();
@@ -193,16 +194,48 @@ const getState = ({ getStore, getActions, setStore }) => {
 						console.log("error", err);
 					});
 			},
-			loginValidation: (username, password) => {
-				console.log(username, password);
+			loginValidation: (user, password) => {
 				const store = getStore();
-				console.log(store.newURL);
+
 				fetch(`${store.newURL}/login`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
 					},
 					body: JSON.stringify({
+						username: user,
+						password: password
+					})
+				})
+					.then(resp => {
+						//console.log("respuesta", resp.json());
+						return resp.json();
+					})
+					.then(data => {
+						//setStore({ token: data.results || data.result });
+
+						localStorage.setItem("token", data.access_token);
+						setStore({ username: user });
+						console.log(user);
+						window.location.reload();
+					})
+
+					.catch(err => {
+						console.log("error", err);
+					});
+			},
+			registerValidation: (firstname, lastname, email, username, password) => {
+				const store = getStore();
+
+				fetch(`${store.newURL}/register`, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: JSON.stringify({
+						firstname: firstname,
+						lastname: lastname,
+						email: email,
 						username: username,
 						password: password
 					})
@@ -213,10 +246,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 					})
 					.then(data => {
 						//setStore({ token: data.results || data.result });
-						console.log("dataresult", data);
-						localStorage.setItem("token", data.access_token);
-						setStore({ username: username });
-						window.location.reload();
+
+						setStore({ register: true });
 					})
 
 					.catch(err => {

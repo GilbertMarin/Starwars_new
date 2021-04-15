@@ -36,18 +36,14 @@ export const Generic = () => {
 									className="card-img-top"
 								/>
 								<Card.Body>
-									<Card.Title>
-										{value == "films" ? element.properties.title : element.name}
-									</Card.Title>
-									<Link to={`/details/${value}/${element.uid}`}>
+									<Card.Title>{value == "films" ? element.title : element.name}</Card.Title>
+									{/* <Link to={`/details/${value}/${element.uid}`}>
 										<Button variant="primary">Go to details</Button>
-									</Link>
+									</Link> */}
 									<Button
 										variant="warning"
 										onClick={() => {
-											actions.addFavorite(
-												value == "films" ? element.properties.title : element.name
-											);
+											actions.addFavorite(value == "films" ? element.title : element.name);
 										}}>
 										<i className="fa fa-heart" />
 									</Button>

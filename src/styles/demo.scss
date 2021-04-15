@@ -1,0 +1,40 @@
+body{
+    background-image: url("https://www.enjpg.com/img/2020/star-wars-9.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+.formulary{
+    background: rgba(0, -0, -0, -.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 30px black;
+    color: white;
+}
+
+.form-control{
+    background: darkgray;
+}
+.signin{
+    background: darkblue;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: 700!important;
+    color: white;
+    transition: 0.5s ease-in;
+}
+
+.signin:hover{
+    color: white;
+}
+.register{
+    color: black;
+    background: white;
+    padding: 10px;
+    transition: 0.5s ease-in;
+    text-decoration-style: none;
+    text-decoration-line: none;
+    font-size: 16px;
+    font-weight: 700!important;
+}
