@@ -18,10 +18,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 			home: [],
 			details: [],
 			baseURL: "https://www.swapi.tech/api/",
-			newURL: "https://3000-crimson-llama-vl3x7loq.ws-us03.gitpod.io",
+			newURL: "https://3000-crimson-beetle-z9whtpmv.ws-us03.gitpod.io",
 			favorites: [],
 			login: false,
-			username: "",
+			username: "test",
 			register: false
 		},
 		actions: {
@@ -114,30 +114,48 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			addFavorite: name => {
 				const store = getStore();
-				store.favorites.includes(name)
-					? setStore({ favorites: store.favorites })
-					: setStore({ favorites: store.favorites.concat(name) });
-				console.log("Entre a agregar a Favoritos", store);
+				// store.favorites.includes(name)
+				// 	? setStore({ favorites: store.favorites })
+				// 	: setStore({ favorites: store.favorites.concat(name) });
+				// console.log("Entre a agregar a Favoritos", store);
 
 				let token = localStorage.getItem("token");
+				let data = { username: store.username, value: name };
 				fetch(`${store.newURL}/favorites/`, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json",
 						Authorization: `Bearer	${token}`
 					},
-					body: {
-						username: store.username,
-						value: name
-					}
+					body: JSON.stringify(data)
 				}).then(resp => {
 					//console.log("respuesta", resp.json());
+					fetch(`${store.newURL}/favorites/`, {
+						method: "GET",
+						headers: {
+							"Content-Type": "application/json",
+							Authorization: `Bearer	${token}`
+						}
+					})
+						.then(resp => {
+							//console.log("respuesta", resp.json());
+							return resp.json();
+						})
+						.then(data => {
+							setStore({ favorites: data });
+							console.log("dataresult", store);
+						})
+
+						.catch(err => {
+							console.log("error", err);
+						});
 					return resp.json();
 				});
 			},
 
 			deleteFavorites: index => {
 				const store = getStore();
+				console.log(store, "Mi store papa");
 				const deleteId = store.favorites[index].id;
 				let token = localStorage.getItem("token");
 				store.favorites.splice(index, 1);
